@@ -1,0 +1,161 @@
+// CS_Project_2017-18.cpp : Defines the entry point for the console application.
+//
+
+#include <iostream>
+#include <string>
+#include <random>
+#include <time.h>
+using namespace std;
+string level;
+long long score = 0, increase = 0;
+bool again; bool grid[11][11];
+void printgrid()
+{
+	cout << "\nCurrent status of grid is: \n";
+	for (int i = 9; i >= 0; --i)
+	{
+		cout << "\n";
+		for (int j = 0; j < 10; ++j)
+		{	
+			if (grid[i][j] == true)
+				cout << " * ";
+			else
+				cout << " - ";
+		}
+	}
+}
+int printline()
+{
+	cout << "\nChoose in which column should this block be placed: ";
+	cout << "* * *\n";
+	cout << "Enter column number: ";
+	int temp; cin >> temp;
+	return temp;
+}
+int printtri()
+{
+	cout << "\nChoose in which column should this block be placed: ";
+	cout << "\n*\n";
+	cout << "* *\n";
+	cout << "Enter column number: ";
+	int temp; cin >> temp;
+	return temp;
+}
+int makeline(int place)
+{
+	for (int i = 0; i < 11; ++i)
+	{
+		if ((grid[i][place] == false) && (grid[i][place + 1] == false) && (grid[i][place + 2] == false))
+		{
+			grid[i][place] = true; grid[i][place + 1] = true; grid[i][place + 2] = true;
+			return 0;
+		}
+	}
+}
+int maketri(int place)
+{
+	for (int i = 0; i < 11; ++i)
+	{
+		if ((grid[i][place] == false) && (grid[i][place + 1] == false) && (grid[i+1][place] == false))
+		{
+			grid[i][place] = true; grid[i][place + 1] = true; grid[i+1][place] = true;
+			return 0;
+		}
+	}
+}
+int points(int increase)
+{
+	int temp = 0;
+	for (int i = 9; i >= 0; --i)
+	{
+		//cout << "Testing 4: \n";
+		int flag=0;
+		for (int j = 0; j < 10; ++j)
+		{
+			if (grid[i][j] == true)
+				++flag;
+		}
+		if (flag == 10)
+		{
+			//cout << "--testing 1\n";
+			temp += increase;
+			for (int k = i; k < 10; ++k)
+			{
+				for (int j = 0; j < 10; ++j)
+					grid[k][j] = grid[k+1][j];
+			}
+			for (long long k = 0; k < 10; ++k)
+				grid[10][k] = false;
+		}
+	}
+	return temp;
+}
+bool out()
+{
+	for (int i = 0; i < 10; ++i)
+		if (grid[10][i])
+			return true;
+	return false;
+}
+int main()
+{
+	cout << "\nMade by Taksh Pratap Singh for Computer Science Project 2017-18\n\n";
+	cout << "Welcome to basic Tetris: \n";
+	cout << "Instructions: In this game, you will be playing on a 10 X 10 grid\n";
+	cout << "1.\t In each turn blocks with a certain shape will appear\n";
+	cout << "2.\t You will choose the column in which these blocks will be placed\n";
+	cout << "3.\t You will recive points 10 points if any row is full and the blocks of that row will disappear. \n";
+	cout << "4.\t If the grid overflows due to your block placement\n";
+	do
+	{
+		cout << "\n -----------------------\n"; cout << "Time to play!\n";
+		cout << "Enter your name: ";
+		string name; cin >> name;
+		cout << "\nSelect difficulty level (easy, medium or hard): "; cin >> level; score = 0;
+		if (level == "easy")
+			increase = 20;
+		else if (level == "medium")
+			increase = 10;
+		else
+			increase = 1;
+		for (int i = 0; i < 11; ++i)
+			for (int j = 0; j < 11; ++j)
+				grid[i][j] = 0;
+		bool play = true; srand(static_cast<unsigned int>(time(0)));
+		again = false;
+		do
+		{
+			printgrid();
+			int t = abs(rand()) % 2;
+			if (t == 0)
+			{
+				int place = printline(); --place;
+				if (place > 8)
+					place = 8;
+				makeline(place); //cout << "test 2: \n";
+			}
+			else
+			{
+				int place = printtri(); --place;
+				if (place > 9)
+					place = 9;
+				maketri(place); //cout << "test 3: \n";
+			}
+			score += points(increase);
+			if (out())
+			{
+				play = false;
+				cout << "\n----------------------\nGame over.\n----------------------\n";
+				cout << name << ", your score was " << score << "\n";
+				cout << "Do want to play again ? (yes or no): ";
+				string response; cin >> response;
+				if (response == "yes")
+					again = true;
+				else
+					cout << "\nThank you for playing, " << name << " .\n";
+			}
+		} while (play);
+	} while (again);
+    return 0;
+}
+
